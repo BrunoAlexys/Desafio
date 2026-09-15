@@ -17,6 +17,9 @@ RUN npm run build
 # Stage 2: Produção (Imagem mais leve)
 FROM node:20-alpine AS production
 
+# Atualizar OS e dependencias globais (Trivy)
+RUN apk upgrade --no-cache && npm install -g npm@latest
+
 WORKDIR /usr/src/app
 
 # Copiar apenas package.json e instalar apenas dependências de produção
