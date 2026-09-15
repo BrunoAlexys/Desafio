@@ -1,11 +1,11 @@
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /usr/src/app
 
 # Instalar dependências
 COPY package*.json ./
-RUN npm ci
+RUN npm ci && npm audit fix || true
 
 # Copiar código fonte
 COPY tsconfig*.json ./
@@ -15,7 +15,7 @@ COPY src/ src/
 RUN npm run build
 
 # Stage 2: Produção (Imagem mais leve)
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 
 # Atualizar OS e dependencias globais (Trivy)
 RUN apk upgrade --no-cache
@@ -24,7 +24,7 @@ WORKDIR /usr/src/app
 
 # Copiar apenas package.json e instalar apenas dependências de produção
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev && npm audit fix --omit=dev || true
 
 # Copiar os arquivos compilados da fase de build
 COPY --from=builder /usr/src/app/dist ./dist
