@@ -26,6 +26,14 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci --omit=dev && npm audit fix --omit=dev || true
 
+# Remover npm, yarn e corepack globais (não necessários em runtime)
+# Elimina todas as CVEs em usr/local/lib/node_modules/npm/ e opt/yarn*
+RUN rm -rf /usr/local/lib/node_modules/npm \
+           /usr/local/lib/node_modules/corepack \
+           /usr/local/bin/npm /usr/local/bin/npx \
+           /usr/local/bin/corepack \
+           /opt/yarn* /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
 # Copiar os arquivos compilados da fase de build
 COPY --from=builder /usr/src/app/dist ./dist
 
@@ -35,4 +43,6 @@ USER node
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Usar node diretamente (npm foi removido da imagem de produção)
+CMD ["node", "dist/server.js"]
+
