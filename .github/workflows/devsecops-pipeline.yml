@@ -105,6 +105,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         
+      - name: Build Docker Image for DAST
+        run: docker build -t my-api-image:${{ github.sha }} .
+
       - name: Start Application for DAST
         run: |
           docker run -d -p 3000:3000 my-api-image:${{ github.sha }}
