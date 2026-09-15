@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+*.js.map
+*.d.ts
+!tsconfig.json
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+
+volume/

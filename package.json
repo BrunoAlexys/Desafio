@@ -1,0 +1,49 @@
+{
+  "name": "api-agendamento-consultas",
+  "version": "1.0.0",
+  "description": "API de agendamento de consultas médicas - Service Layer Architecture",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "test": "jest --verbose",
+    "test:coverage": "jest --verbose --coverage"
+  },
+  "keywords": [
+    "api",
+    "agendamento",
+    "consultas",
+    "express",
+    "typeorm",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "pg": "^8.23.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^1.1.1",
+    "uuid": "^14.0.2"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.16.2",
+    "@swc/jest": "^0.2.39",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.5.0",
+    "@types/uuid": "^10.0.0",
+    "@typescript/typescript6": "^6.0.2",
+    "jest": "^30.5.1",
+    "ts-jest": "^29.4.12",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^6.0.3"
+  }
+}
