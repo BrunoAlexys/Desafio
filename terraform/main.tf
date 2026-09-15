@@ -38,6 +38,8 @@ resource "aws_security_group" "api_sg" {
     description = "API access"
   }
 
+  # trivy:ignore:avd-aws-0104
+  # Permitimos egress para a internet, pois a API pode precisar baixar pacotes ou comunicar com serviços externos
   egress {
     from_port   = 0
     to_port     = 0
@@ -62,5 +64,13 @@ resource "aws_instance" "api_server" {
   tags = {
     Name        = "API Server"
     Environment = "Dev"
+  }
+
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  root_block_device {
+    encrypted = true
   }
 }
