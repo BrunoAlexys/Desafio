@@ -18,7 +18,7 @@ RUN npm run build
 FROM node:20-alpine AS production
 
 # Atualizar OS e dependencias globais (Trivy)
-RUN apk upgrade --no-cache && npm install -g npm@latest
+RUN apk upgrade --no-cache
 
 WORKDIR /usr/src/app
 

@@ -38,7 +38,8 @@ resource "aws_security_group" "api_sg" {
     description = "API access"
   }
 
-  # trivy:ignore:avd-aws-0104
+  #trivy:ignore:AVD-AWS-0104
+  #tfsec:ignore:aws-vpc-no-public-egress-sgr
   # Permitimos egress para a internet, pois a API pode precisar baixar pacotes ou comunicar com serviços externos
   egress {
     from_port   = 0
