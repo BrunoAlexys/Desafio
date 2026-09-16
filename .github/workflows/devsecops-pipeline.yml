@@ -104,17 +104,51 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
+      - name: Create Docker Network
+        run: docker network create dast-net
+
+      - name: Start PostgreSQL
+        run: |
+          docker run -d --name dast-db --network dast-net \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_DB=agendamento \
+            postgres:15-alpine
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in $(seq 1 30); do
+            if docker exec dast-db pg_isready -U postgres -d agendamento > /dev/null 2>&1; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Waiting for PostgreSQL... ($i/30)"
+            sleep 2
+          done
+
       - name: Build Docker Image for DAST
         run: docker build -t my-api-image:${{ github.sha }} .
 
       - name: Start Application for DAST
         run: |
-          docker run -d -p 3000:3000 my-api-image:${{ github.sha }}
-          sleep 10 # Wait for app to start
+          docker run -d --name dast-app --network dast-net -p 3000:3000 \
+            -e PORT=3000 \
+            -e DB_HOST=dast-db \
+            -e DB_PORT=5432 \
+            -e DB_USERNAME=postgres \
+            -e DB_PASSWORD=postgres \
+            -e DB_NAME=agendamento \
+            my-api-image:${{ github.sha }}
+          sleep 10
+
+      - name: Verify Application is Running
+        run: |
+          docker logs dast-app
+          curl -f http://localhost:3000 || echo "App may not have a root endpoint, continuing..."
         
       - name: Run ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           target: 'http://localhost:3000'
-          fail_action: false # Não bloquear a pipeline em avisos pequenos, mas logar as vulnerabilidades
+          fail_action: false
