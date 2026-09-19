@@ -1,4 +1,3 @@
-# Data source for AMI (Simulated in LocalStack)
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -9,9 +8,6 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# Security Group
-#trivy:ignore:AVD-AWS-0104
-#tfsec:ignore:aws-vpc-no-public-egress-sgr
 resource "aws_security_group" "api_sg" {
   name        = "api_sg"
   description = "Security group for the API"
@@ -40,7 +36,6 @@ resource "aws_security_group" "api_sg" {
     description = "API access"
   }
 
-  # Permitimos egress para a internet, pois a API pode precisar baixar pacotes ou comunicar com serviços externos
   egress {
     from_port   = 0
     to_port     = 0
@@ -55,11 +50,10 @@ resource "aws_security_group" "api_sg" {
   }
 }
 
-# EC2 Instance
 resource "aws_instance" "api_server" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
-  
+
   vpc_security_group_ids = [aws_security_group.api_sg.id]
 
   tags = {
